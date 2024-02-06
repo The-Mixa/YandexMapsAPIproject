@@ -3,9 +3,15 @@ import pygame
 import sys
 import os
 
+from _4_map_type import *
 import _4_map_type
+from _3_arrows_keys import *
+from change_map_size import *
+
 from pygame_widgets.button import ButtonArray
 import pygame_widgets
+from load_map import load_map
+
 
 def show_map(params):
     global scale
@@ -36,9 +42,9 @@ def show_map(params):
 
         radiuses=(3, 3, 3),
         border=3,
-        onClicks=(lambda: _4_map_type.change_map_type('map', params),
-                  lambda: _4_map_type.change_map_type('sat', params),
-                  lambda: _4_map_type.change_map_type('skl', params))
+        onClicks=(lambda: change_map_type('map', params),
+                  lambda: change_map_type('sat', params),
+                  lambda: change_map_type('skl', params))
     )
 
     run = True
@@ -53,17 +59,14 @@ def show_map(params):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_PAGEUP:
                     scale, params, map_file = change_map_size(scale, 1, params)
-
-            elif event.key == pygame.K_PAGEDOWN:
-                scale, params, map_file = change_map_size(scale, -1, params)
-            else:
-                params, map_file = arrows(params['ll'], params['z'], event.key, params)
-
+                elif event.key == pygame.K_PAGEDOWN:
+                    scale, params, map_file = change_map_size(scale, -1, params)
+                else:
+                    params, map_file = arrows(params['ll'], params['z'], event.key, params)
 
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
             response = requests.get(server, params=params)
-            print(params)
 
             if not response:
                 print("Ошибка выполнения запроса:")
@@ -71,11 +74,9 @@ def show_map(params):
                 print("Http статус:", response.status_code, "(", response.reason, ")")
                 sys.exit(1)
 
-            map_file = "map.png"
-            with open(map_file, "wb") as file:
-                file.write(response.content)
+            map_file = load_map(params)
         screen.fill('black')
-        screen.blit(pygame.image.load(map_file), (0, 0))
+        screen.blit(map_file, (0, 0))
 
         pygame_widgets.update(events)
         pygame.display.update()
