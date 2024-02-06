@@ -1,44 +1,50 @@
-import requests
+from change_map_size import *
 import pygame
-import sys
 import os
 
 
 def show_map(params):
-    server = 'http://static-maps.yandex.ru/1.x/'
+    global scale
 
-    response = requests.get(server, params=params)
+    map_file = load_map(params)
 
-    if not response:
-        print("Ошибка выполнения запроса:")
-        print(response.url)
-        print("Http статус:", response.status_code, "(", response.reason, ")")
-        sys.exit(1)
-
-    map_file = "map.png"
-    with open(map_file, "wb") as file:
-        file.write(response.content)
-
+    # pygame
     pygame.init()
+    pygame.display.set_caption('Большой Бублик')
     screen = pygame.display.set_mode((600, 450))
-    screen.blit(pygame.image.load(map_file), (0, 0))
-    pygame.display.flip()
-    while pygame.event.wait().type != pygame.QUIT:
-        pass
-    pygame.quit()
 
-    os.remove(map_file)
+    while True:
+        screen.blit(map_file, (0, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                os.remove(map_file)
+                pygame.quit()
+                exit(0)
+
+            # Обработка изменения масштабирования (PAGEUP - увеличение, PAGEDOWN - уменьшение):
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_PAGEUP:
+                    scale, params, map_file = change_map_size(scale, 1, params)
+
+                elif event.key == pygame.K_PAGEDOWN:
+                    scale, params, map_file = change_map_size(scale, -1, params)
+
+            pygame.display.flip()
 
 
-print('Введите кординаты (<широта>, <долгота>)')
-lat, lon = input().split(', ')
-print('Введите желаемый масштаб от 1 до 20')
-scale = int(input())
+if __name__ == '__main__':
+    lat, lon = input('Введите кординаты (<широта>, <долгота>): ').split(', ')
+    scale = int(input('Введите желаемый масштаб от 1 до 20:'))
 
-params = {
-    'll': ','.join([lon, lat]),
-    'z': scale,
-    'l': 'map'
-}
+    if scale < 1 or scale > 20:
+        print('Неверно задан размер')
 
-show_map(params)
+    else:
+        params = {
+            'll': ','.join([lon, lat]),
+            'z': scale,
+            'l': 'map'
+        }
+
+        show_map(params)
