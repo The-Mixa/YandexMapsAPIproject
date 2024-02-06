@@ -1,4 +1,3 @@
-import pygame_widgets
 import requests
 import pygame
 import sys
@@ -6,9 +5,10 @@ import os
 
 import _4_map_type
 from pygame_widgets.button import ButtonArray
-
+import pygame_widgets
 
 def show_map(params):
+    global scale
     server = 'http://static-maps.yandex.ru/1.x/'
 
     response = requests.get(server, params=params)
@@ -19,11 +19,11 @@ def show_map(params):
         print("Http статус:", response.status_code, "(", response.reason, ")")
         sys.exit(1)
 
-    map_file = "map.png"
-    with open(map_file, "wb") as file:
-        file.write(response.content)
+    map_file = load_map(params)
 
+    # pygame
     pygame.init()
+    pygame.display.set_caption('Большой Бублик')
     screen = pygame.display.set_mode((600, 450))
 
     buttons = ButtonArray(
@@ -49,6 +49,16 @@ def show_map(params):
                 pygame.quit()
                 run = False
                 quit()
+                # Обработка изменения масштабирования (PAGEUP - увеличение, PAGEDOWN - уменьшение):
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_PAGEUP:
+                    scale, params, map_file = change_map_size(scale, 1, params)
+
+            elif event.key == pygame.K_PAGEDOWN:
+                scale, params, map_file = change_map_size(scale, -1, params)
+            else:
+                params, map_file = arrows(params['ll'], params['z'], event.key, params)
+
 
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
@@ -74,15 +84,18 @@ def show_map(params):
     os.remove(map_file)
 
 
-print('Введите кординаты (<широта>, <долгота>)')
-lat, lon = input().split(', ')
-print('Введите желаемый масштаб от 1 до 20')
-scale = int(input())
+if __name__ == '__main__':
+    lat, lon = input('Введите кординаты (<широта>, <долгота>):\n').split(', ')
+    scale = int(input('Введите желаемый масштаб от 1 до 20:\n'))
 
-params = {
-    'll': ','.join([lon, lat]),
-    'z': scale,
-    'l': 'map'
-}
+    if scale < 1 or scale > 20:
+        print('Неверно задан размер')
+
+    else:
+        params = {
+            'll': ','.join([lon, lat]),
+            'z': scale,
+            'l': 'map'
+        }
 
 show_map(params)
