@@ -1,4 +1,5 @@
 from change_map_size import *
+from _3_arrows_keys import *
 import pygame
 import os
 
@@ -29,7 +30,8 @@ def show_map(params):
 
                 elif event.key == pygame.K_PAGEDOWN:
                     scale, params, map_file = change_map_size(scale, -1, params)
-
+                else:
+                    params, map_file = arrows(params['ll'], params['z'], event.key, params)
             pygame.display.flip()
 
 
