@@ -66,10 +66,22 @@ def show_map(params):
     run = True
     while run:
         screen.blit(map_file, (0, 0))
+        screen.blit(scale_text, (1, 435))  # отрисовка масштаба
+
+        # отрисовка рамки поиска (с чёрной границей, размером в 1 пиксель)
+        pygame.draw.rect(screen, 'black', (9, 9, input_bar_width + 2, input_bar_height + 2))
+        pygame.draw.rect(screen, 'white', (10, 10, input_bar_width, 23))
+        screen.blit(font_input_text, (10, 15))
+
+        # отрисовка "кнопки поиска" (красный цвет) с текстом
+        pygame.draw.rect(screen, 'black', (15 + input_bar_width, 9, 50, input_bar_height + 2))
+        pygame.draw.rect(screen, 'red', (16 + input_bar_width, 10, 48, input_bar_height))
+        screen.blit(font_search, (15 + input_bar_width + 3, input_bar_height // 2 + 3))
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                os.remove(map_file)
+                os.remove('map.png')
                 run = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_PAGEUP:
@@ -103,6 +115,7 @@ def show_map(params):
                         params, map_file = search_object(input_text, params)
                     except Exception as e:
                         print('error', e)
+
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
             response = requests.get(server, params=params)
@@ -114,15 +127,10 @@ def show_map(params):
                 sys.exit(1)
 
             map_file = load_map(params)
-        screen.fill('black')
-        screen.blit(map_file, (0, 0))
-
         pygame_widgets.update(events)
         pygame.display.update()
 
     pygame.quit()
-    os.remove(map_file)
-
 
 if __name__ == '__main__':
     lat, lon = "60.945376", "76.590455"
