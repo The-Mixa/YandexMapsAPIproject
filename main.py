@@ -86,7 +86,7 @@ def show_map(params):
 
 
 if __name__ == '__main__':
-    lat, lon = input('Введите кординаты (<широта>, <долгота>):\n').split(', ')
+    lat, lon = "60.945376", "76.590455"
     scale = int(input('Введите желаемый масштаб от 1 до 20:\n'))
 
     if scale < 1 or scale > 20:
