@@ -9,6 +9,7 @@ from _4_map_type import *
 import _4_map_type
 from _3_arrows_keys import *
 from change_map_size import *
+from _11_find_adress import *
 
 from pygame_widgets.button import ButtonArray
 import pygame_widgets
@@ -99,6 +100,9 @@ def show_map(params):
                 # Добавление 1 символа в строку поиска
                 else:
                     input_text += event.unicode
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
 
                 # Постоянно обновляем строку поиска (отображаем только первые 28 символов запроса)
                 font_input_text = font_input.render(input_text[:28], True, 'black')
