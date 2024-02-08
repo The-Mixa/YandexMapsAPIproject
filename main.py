@@ -10,9 +10,16 @@ import _4_map_type
 from _3_arrows_keys import *
 from change_map_size import *
 
-from pygame_widgets.button import ButtonArray
+from pygame_widgets.button import ButtonArray, Button
 import pygame_widgets
 from load_map import load_map
+
+
+def remove_point(params):
+    if 'pt' in params:
+        del params['pt']
+    _4_map_type.CHANGED = True
+    _4_map_type.REMOVED = True
 
 
 def show_map(params):
@@ -60,7 +67,19 @@ def show_map(params):
         border=3,
         onClicks=(lambda: change_map_type('map', params),
                   lambda: change_map_type('sat', params),
-                  lambda: change_map_type('skl', params))
+                  lambda: change_map_type('skl', params)),
+    )
+
+    remove_button = Button(
+        screen, 315, 10, 50, 25,
+        text='Cброс', fontSize=18, margin=5,
+        textColour=(255, 255, 255),
+        inactiveColour=(255, 0, 0),
+        hoverColour=(200, 50, 50),
+        pressedColour=(200, 100, 100),
+        borderThickness=1,
+        borderColour='black',
+        onClick=lambda: remove_point(params),
     )
 
     run = True
@@ -125,12 +144,18 @@ def show_map(params):
                 print(response.url)
                 print("Http статус:", response.status_code, "(", response.reason, ")")
                 sys.exit(1)
-
             map_file = load_map(params)
+
+            if _4_map_type.REMOVED:
+                _4_map_type.REMOVED = False
+                input_text = ''
+                font_input_text = font_input.render(input_text[:28], True, 'black')
+
         pygame_widgets.update(events)
         pygame.display.update()
 
     pygame.quit()
+
 
 if __name__ == '__main__':
     lat, lon = "60.945376", "76.590455"

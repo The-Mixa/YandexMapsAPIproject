@@ -8,4 +8,5 @@ def change_map_type(typ, params):
 
 
 CHANGED = False
+REMOVED = False
 
