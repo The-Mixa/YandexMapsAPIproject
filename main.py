@@ -7,6 +7,7 @@ from _4_map_type import *
 import _4_map_type
 from _3_arrows_keys import *
 from change_map_size import *
+from _11_find_adress import *
 
 from pygame_widgets.button import ButtonArray
 import pygame_widgets
@@ -62,7 +63,10 @@ def show_map(params):
                 elif event.key == pygame.K_PAGEDOWN:
                     scale, params, map_file = change_map_size(scale, -1, params)
                 else:
-                    params, map_file = arrows(params['ll'], params['z'], event.key, params)
+                    params, map_file = arrows(params['ll'], z_to_spn[str(params['z'])], event.key, params)
+            elif event.type == pygame.MOUSEBUTTONDOWN: # ищем объёкт по нажатию мыши
+                if event.button == 1: # куда вписывать ещё не знаю, поэтому будет просто строка, что нашлось
+                    find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
 
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
@@ -88,6 +92,25 @@ def show_map(params):
 if __name__ == '__main__':
     lat, lon = "60.945376", "76.590455"
     scale = int(input('Введите желаемый масштаб от 1 до 20:\n'))
+    z_to_spn = {
+    '19': (0.0005, 0.0005),
+    '18': (0.001, 0.001),
+    '17': (0.0015, 0.0015),
+    '16': (0.004, 0.004),
+    '15': (0.009, 0.009),
+    '14': (0.01, 0.01),
+    '13': (0.02, 0.02),
+    '12': (0.05, 0.05),
+    '11': (0.09, 0.09),
+    '10': (0.2, 0.2),
+    '9': (0.5, 0.5),
+    '8': (0.7, 0.7),
+    '7': (1.5, 1.5),
+    '6': (2.5, 2.5),
+    '5': (5, 5),
+    '4': (10, 10),
+    '3': (20, 20),
+    '2': (35, 35)}
 
     if scale < 1 or scale > 20:
         print('Неверно задан размер')
