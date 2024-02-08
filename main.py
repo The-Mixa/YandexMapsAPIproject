@@ -91,7 +91,7 @@ def show_map(params):
                     scale, params, map_file = change_map_size(scale, -1, params)
 
                 elif event.key in (pygame.K_DOWN, pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT):
-                    params, map_file = arrows(params['ll'], params['z'], event.key, params)
+                    params, map_file = arrows(params['ll'], z_to_spn[str(params['z'])], event.key, params)
 
                 elif event.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
