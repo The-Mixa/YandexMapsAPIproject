@@ -13,7 +13,11 @@ def find_object(coords, window_coords, scale):
     json_response = response.json()
     if not json_response:
         pass
-    object = json_response["features"][0]
-    return object
+
+    organization = json_response["features"][0]
+    org_address = organization["properties"]["name"]
+    org_cords = ','.join(map(str, organization['geometry']['coordinates']))
+
+    return org_cords, org_address
 
 

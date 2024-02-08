@@ -136,7 +136,11 @@ def show_map(params):
                     except Exception as e:
                         print('error', e)
                 else:
-                    find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                    cords, address = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                    params['pt'] = f'{cords},pm2rdm'
+                    input_text = address
+                    font_input_text = font_input.render(input_text[:28], True, 'black')
+                    _4_map_type.CHANGED = True
 
 
         if _4_map_type.CHANGED:
