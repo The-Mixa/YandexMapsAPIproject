@@ -4,7 +4,6 @@ from load_map import load_map
 
 def arrows(coords, scale, key, params):
     coords_of_pont = [float(i) for i in coords.split(',')]
-
     match key:
         case pygame.K_DOWN:
             params['ll'] = f'{coords_of_pont[0]},{coords_of_pont[1] - scale[1]}'
