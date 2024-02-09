@@ -12,6 +12,7 @@ def find_object(coords, window_coords, scale):
         "text": ','.join([str(lon_point), str(lat_point)]),
     }
     response = requests.get(search_api_server, params=search_params)
+
     json_response = response.json()
     if not json_response:
         pass

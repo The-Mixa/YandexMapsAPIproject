@@ -20,7 +20,7 @@ from _4_map_type import *
 import _4_map_type
 
 # 5 задание
-from search_object import search_object
+from search_object import *
 
 # 11 задание (вопрос возник - зачем 2 коммита?)
 from _11_find_adress import *
@@ -87,6 +87,11 @@ def show_map(params):
     scale_font = pygame.font.Font(None, 20)
     scale_text = scale_font.render(f'Масштаб: {scale}', True, 'black')
 
+    # флаг (почтовый индекс - 9 задание) и шрифт для переключателя
+    _get_post_index = False
+    post_font = pygame.font.Font(None, 18)
+    post_text = post_font.render('Индекс', True, 'white')
+
     # шрифт для отображения адреса найденного объекта
     address_bar_width = 354
     font_address = pygame.font.Font(None, 16)
@@ -109,7 +114,7 @@ def show_map(params):
     )
 
     remove_button = Button(
-        screen, 315, 10, 50, 25,
+        screen, 315, 9, 50, 25,
         text='Сброс', fontSize=18, margin=5,
         textColour=(255, 255, 255),
         inactiveColour=(255, 0, 0),
@@ -139,6 +144,12 @@ def show_map(params):
         pygame.draw.rect(screen, 'black', (15 + input_bar_width, 9, 50, input_bar_height + 2))
         pygame.draw.rect(screen, 'red', (16 + input_bar_width, 10, 48, input_bar_height))
         screen.blit(font_search, (15 + input_bar_width + 3, input_bar_height // 2 + 3))
+
+        # отрисовка кнопки-переключателя (для отображения почтового индекса)
+        post_button_color = 'green' if _get_post_index else 'red'
+        pygame.draw.rect(screen, 'black', (375, 9, 50, input_bar_height + 2))
+        pygame.draw.rect(screen, post_button_color, (376, 10, 48, input_bar_height))
+        screen.blit(post_text, (377, 16))
 
         # отрисовка информации об объекте:
         pygame.draw.rect(screen, 'black', (9, 39, address_bar_width + 2, input_bar_height * 2 + 2))
@@ -187,20 +198,36 @@ def show_map(params):
                         y in range(9, 9 + input_bar_height + 2):
                     try:
                         params, map_file, add_ = search_object(input_text, params)
-                        font_address_text1, font_address_text2 = change_address_text(add_)
+                        postal_code = get_postal_code(input_text, params)
+
+                        if not _get_post_index:
+                            postal_code = ''
+
+                        font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
 
                     except Exception as e:
-                        print('error', e)
+                        font_address_text1, font_address_text2 = change_address_text('Ничего не найдено')
+                        print('error:', e)
+
+                elif x in range(376, 376 + 48 + 1) and y in range(9, 9 + input_bar_height + 2):
+                    _get_post_index = not _get_post_index
+
                 else:
-                    if not(x in range(9, 365 + 1) and y in range(10, 65 + 1)):
+                    if not(x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
                         try:
                             cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
-                            font_address_text1, font_address_text2 = change_address_text(add_)
+                            postal_code = get_postal_code(add_, params)
+
+                            if not _get_post_index:
+                                postal_code = ''
 
                             params['pt'] = f'{cords},pm2rdm'
+
+                            font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
+
                             _4_map_type.CHANGED = True
                         except Exception as e:
-                            print('error', e)
+                            print('error:', e)
 
         #
         if _4_map_type.CHANGED:
