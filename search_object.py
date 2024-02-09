@@ -19,6 +19,11 @@ def handler(address, par):
     # Получаем первый топоним из ответа геокодера.
     toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
 
+    try:
+        toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["Address"]["formatted"]
+    except:
+        toponym_address = ''
+
     # Координаты центра топонима:
     toponym_coodrinates = toponym["Point"]["pos"]
 
@@ -33,15 +38,15 @@ def handler(address, par):
         "pt": f'{",".join([toponym_longitude, toponym_lattitude])},pm2rdm'
     }
 
-    return map_params
+    return map_params, toponym_address
 
 
 # Поиск объекта и его отображение
 def search_object(search, params):
-    _params = handler(search, params)
+    _params, add_ = handler(search, params)
     _params['z'] = params['z']
 
-    return _params, load_map(_params)
+    return _params, load_map(_params), add_
 
 
 

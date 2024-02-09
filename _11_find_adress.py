@@ -15,7 +15,7 @@ def find_object(coords, window_coords, scale):
         pass
 
     organization = json_response["features"][0]
-    org_address = organization["properties"]["name"]
+    org_address = organization["properties"]["GeocoderMetaData"]["text"]
     org_cords = ','.join(map(str, organization['geometry']['coordinates']))
     return org_cords, org_address
 
