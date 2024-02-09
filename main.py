@@ -1,21 +1,34 @@
-from search_object import search_object
-from change_map_size import *
-import requests
+# Блок PyGame
+from pygame_widgets.button import ButtonArray, Button  # виджеты PyGame - группа кнопок, кнопки
+import pygame_widgets  # обновление виджетов PyGame
 import pygame
-import sys
-import os
+import sys  # закрытие программы (завершение работы)
+import os  # удаление изображения (карты)
 
+# Далее - импорт функций для каждого задания
+# (1, 7, ... задания находятся в этом файле - main.py)
+
+# 2 задание
+from change_map_size import *
+from load_map import load_map  # Функция загрузки изображения-карты
+
+# 3 задание
+from _3_arrows_keys import *
+
+# 4 задание
 from _4_map_type import *
 import _4_map_type
-from _3_arrows_keys import *
-from change_map_size import *
+
+# 5 задание
+from search_object import search_object
+
+# 11 задание (вопрос возник - зачем 2 коммита?)
 from _11_find_adress import *
 
-from pygame_widgets.button import ButtonArray, Button
-import pygame_widgets
-from load_map import load_map
+import requests
 
 
+# Удалить метку с карты
 def remove_point(params):
     if 'pt' in params:
         del params['pt']
@@ -23,6 +36,7 @@ def remove_point(params):
     _4_map_type.REMOVED = True
 
 
+# Отображение карты
 def show_map(params):
     global scale
     server = 'http://static-maps.yandex.ru/1.x/'
@@ -104,15 +118,20 @@ def show_map(params):
                 os.remove('map.png')
                 run = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_PAGEUP:
+
+                # Увеличение масштаба карты
+                if event.key == pygame.K_PAGEUP or event.key == pygame.K_p:
                     scale, params, map_file = change_map_size(scale, 1, params)
 
-                elif event.key == pygame.K_PAGEDOWN:
+                # Уменьшение масштаба карты
+                elif event.key == pygame.K_PAGEDOWN or event.key == pygame.K_o:
                     scale, params, map_file = change_map_size(scale, -1, params)
 
+                # Перемещение карты (при нажатии стрелочек)
                 elif event.key in (pygame.K_DOWN, pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT):
                     params, map_file = arrows(params['ll'], z_to_spn[str(params['z'])], event.key, params)
 
+                # Удаление одного символа из строки поиска
                 elif event.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
 
@@ -136,13 +155,16 @@ def show_map(params):
                     except Exception as e:
                         print('error', e)
                 else:
-                    cords, address = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
-                    params['pt'] = f'{cords},pm2rdm'
-                    input_text = address
-                    font_input_text = font_input.render(input_text[:28], True, 'black')
-                    _4_map_type.CHANGED = True
+                    try:
+                        cords, address = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                        params['pt'] = f'{cords},pm2rdm'
+                        input_text = address
+                        font_input_text = font_input.render(input_text[:28], True, 'black')
+                        _4_map_type.CHANGED = True
+                    except Exception as e:
+                        print('error', e)
 
-
+        #
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
             response = requests.get(server, params=params)
@@ -162,8 +184,8 @@ def show_map(params):
 
         pygame_widgets.update(events)
         pygame.display.update()
-
     pygame.quit()
+
 
 if __name__ == '__main__':
     lat, lon = "60.945376", "76.590455"
