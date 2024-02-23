@@ -27,7 +27,7 @@ from _11_find_adress import *
 
 import requests
 
-#12 задание
+# 12 задание
 from _12_find_org import *
 
 
@@ -50,13 +50,13 @@ def remove_point(params):
     _4_map_type.REMOVED = True
 
 
-
 # изменение текста, отображающего адрес указанной метки (или при завершении поиска объекта)
 def change_address_text(address):
     if len(address) > 55:
         add_1, add_2 = address[:54] + '-', address[54:]
         return font_address.render(add_1, True, 'black'), font_address.render(add_2, True, 'black')
     return font_address.render(address, True, 'black'), font_address.render('', True, 'black')
+
 
 # Отображение карты
 def show_map(params):
@@ -217,9 +217,10 @@ def show_map(params):
                         _get_post_index = not _get_post_index
 
                     else:
-                        if not(x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
+                        if not (x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
                             try:
-                                cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                                cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(),
+                                                          z_to_spn[str(params['z'])])
                                 postal_code = get_postal_code(add_, params)
 
                                 if not _get_post_index:
@@ -245,8 +246,6 @@ def show_map(params):
                         font_address_text1, font_address_text2 = change_address_text('')
                         del params['pt']
 
-
-        #
         if _4_map_type.CHANGED:
             _4_map_type.CHANGED = False
             response = requests.get(server, params=params)
@@ -268,24 +267,24 @@ if __name__ == '__main__':
     lat, lon = "60.945376", "76.590455"
     scale = 15  # int(input('Введите желаемый масштаб от 1 до 20:\n'))
     z_to_spn = {
-    '19': (0.0005, 0.0005),
-    '18': (0.001, 0.001),
-    '17': (0.0015, 0.0015),
-    '16': (0.004, 0.004),
-    '15': (0.009, 0.009),
-    '14': (0.01, 0.01),
-    '13': (0.02, 0.02),
-    '12': (0.05, 0.05),
-    '11': (0.09, 0.09),
-    '10': (0.2, 0.2),
-    '9': (0.5, 0.5),
-    '8': (0.7, 0.7),
-    '7': (1.5, 1.5),
-    '6': (2.5, 2.5),
-    '5': (5, 5),
-    '4': (10, 10),
-    '3': (20, 20),
-    '2': (35, 35)}
+        '19': (0.0005, 0.0005),
+        '18': (0.001, 0.001),
+        '17': (0.0015, 0.0015),
+        '16': (0.004, 0.004),
+        '15': (0.009, 0.009),
+        '14': (0.01, 0.01),
+        '13': (0.02, 0.02),
+        '12': (0.05, 0.05),
+        '11': (0.09, 0.09),
+        '10': (0.2, 0.2),
+        '9': (0.5, 0.5),
+        '8': (0.7, 0.7),
+        '7': (1.5, 1.5),
+        '6': (2.5, 2.5),
+        '5': (5, 5),
+        '4': (10, 10),
+        '3': (20, 20),
+        '2': (35, 35)}
 
     if scale < 1 or scale > 20:
         print('Неверно задан размер')
