@@ -4,7 +4,7 @@ from load_map import load_map
 
 # Изменение размеров масштабирования (учитывая допустимые значения)
 def change_scale(scl, step):
-    if (scl + step < 1) or (scl + step > 20):
+    if (scl + step <= 1) or (scl + step >= 20):
         return scl
     return scl + step
 

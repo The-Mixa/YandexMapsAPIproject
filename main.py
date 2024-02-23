@@ -27,6 +27,9 @@ from _11_find_adress import *
 
 import requests
 
+#12 задание
+from _12_find_org import *
+
 
 def is_response_incorrect(resp):
     if not resp:
@@ -190,44 +193,58 @@ def show_map(params):
                 scale_text = scale_font.render(f'Масштаб: {scale}', True, 'black')
 
             # Обработка нажатия ЛКМ (на клавишу поиска):
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                x, y = pygame.mouse.get_pos()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    x, y = pygame.mouse.get_pos()
 
-                # Выполняем поиск:
-                if x in range(15 + input_bar_width, 15 + input_bar_width + 50 + 1) and \
-                        y in range(9, 9 + input_bar_height + 2):
-                    try:
-                        params, map_file, add_ = search_object(input_text, params)
-                        postal_code = get_postal_code(input_text, params)
-
-                        if not _get_post_index:
-                            postal_code = ''
-
-                        font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
-
-                    except Exception as e:
-                        font_address_text1, font_address_text2 = change_address_text('Ничего не найдено')
-                        print('error:', e)
-
-                elif x in range(376, 376 + 48 + 1) and y in range(9, 9 + input_bar_height + 2):
-                    _get_post_index = not _get_post_index
-
-                else:
-                    if not(x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
+                    # Выполняем поиск:
+                    if x in range(15 + input_bar_width, 15 + input_bar_width + 50 + 1) and \
+                            y in range(9, 9 + input_bar_height + 2):
                         try:
-                            cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
-                            postal_code = get_postal_code(add_, params)
+                            params, map_file, add_ = search_object(input_text, params)
+                            postal_code = get_postal_code(input_text, params)
 
                             if not _get_post_index:
                                 postal_code = ''
 
-                            params['pt'] = f'{cords},pm2rdm'
-
                             font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
 
-                            _4_map_type.CHANGED = True
                         except Exception as e:
+                            font_address_text1, font_address_text2 = change_address_text('Ничего не найдено')
                             print('error:', e)
+
+                    elif x in range(376, 376 + 48 + 1) and y in range(9, 9 + input_bar_height + 2):
+                        _get_post_index = not _get_post_index
+
+                    else:
+                        if not(x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
+                            try:
+                                cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                                postal_code = get_postal_code(add_, params)
+
+                                if not _get_post_index:
+                                    postal_code = ''
+
+                                params['pt'] = f'{cords},pm2rdm'
+
+                                font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
+
+                                _4_map_type.CHANGED = True
+                            except Exception as e:
+                                print('error:', e)
+
+                # find organization by right click
+                elif event.button == 3:
+                    data = find_organization(params['ll'], pygame.mouse.get_pos(), z_to_spn[str(params['z'])])
+                    if data:
+                        cords, add_ = data
+                        params['pt'] = f'{cords},pm2rdm'
+                        font_address_text1, font_address_text2 = change_address_text(add_)
+                        _4_map_type.CHANGED = True
+                    else:
+                        font_address_text1, font_address_text2 = change_address_text('')
+                        del params['pt']
+
 
         #
         if _4_map_type.CHANGED:
