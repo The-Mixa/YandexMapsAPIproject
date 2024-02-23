@@ -127,7 +127,9 @@ def show_map(params):
         borderColour='black',
         onClick=lambda: remove_point(params),
     )
-
+    
+    postal_code = ''
+    text = ''
     run = True
     while run:
         # если была нажата кнопка сброса - очищаем поле вывода адреса
@@ -202,12 +204,13 @@ def show_map(params):
                             y in range(9, 9 + input_bar_height + 2):
                         try:
                             params, map_file, add_ = search_object(input_text, params)
-                            postal_code = get_postal_code(input_text, params)
+                            postal_code = postal_code_now = get_postal_code(input_text, params)
 
                             if not _get_post_index:
-                                postal_code = ''
+                                postal_code_now = ''
 
-                            font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
+                            font_address_text1, font_address_text2 = change_address_text(f'{add_} {postal_code_now}')
+                            text = add_
 
                         except Exception as e:
                             font_address_text1, font_address_text2 = change_address_text('Ничего не найдено')
@@ -215,21 +218,26 @@ def show_map(params):
 
                     elif x in range(376, 376 + 48 + 1) and y in range(9, 9 + input_bar_height + 2):
                         _get_post_index = not _get_post_index
+                        if _get_post_index:
+                            font_address_text1, font_address_text2 = change_address_text(f'{text} {postal_code}')
+                        else:
+                            font_address_text1, font_address_text2 = change_address_text(text)
+
 
                     else:
                         if not (x in range(9, 376 + 48 + 1) and y in range(10, 85 + 1)):
                             try:
                                 cords, add_ = find_object(params['ll'], pygame.mouse.get_pos(),
                                                           z_to_spn[str(params['z'])])
-                                postal_code = get_postal_code(add_, params)
+                                postal_code = postal_code_now = get_postal_code(add_, params)
 
                                 if not _get_post_index:
-                                    postal_code = ''
+                                    postal_code_now = ''
 
                                 params['pt'] = f'{cords},pm2rdm'
 
-                                font_address_text1, font_address_text2 = change_address_text(add_ + f' {postal_code}')
-
+                                font_address_text1, font_address_text2 = change_address_text(f'{add_} {postal_code_now}')
+                                text = add_
                                 _4_map_type.CHANGED = True
                             except Exception as e:
                                 print('error:', e)
